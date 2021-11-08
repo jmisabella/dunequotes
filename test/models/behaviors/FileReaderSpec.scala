@@ -10,7 +10,8 @@ class FileReaderSpec extends AnyFlatSpec with BeforeAndAfterEach {
   case object reader extends FileReader
 
   val emptyFileContents = ""
-  val shiningFileContents = 
+  val singleLineFileContents = "Hello world!!"
+  val multiLineFileContents = 
     s"""All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy.  
 All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy. 
 All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy.  All work and no play makes Jack a dull boy. 
@@ -27,11 +28,9 @@ All
                                                               boy.  
     """
 
-  val helloWorldFileContents = "Hello world!!"
-
   private val emptyFileName = "Empty.txt"
-  private val shiningFileName = "TheShining.txt"
-  private val helloWorldFileName = "HelloWorld.txt"
+  private val singleLineFileName = "HelloWorld.txt"
+  private val multiLineFileName = "TheShining.txt"
   private val nonExistentFileName = "NonExistent.txt"
   private var fileReader: java.io.FileReader = null 
 
@@ -42,15 +41,15 @@ All
     } finally {
       fileWriter.close()
     }
-    fileWriter = new java.io.FileWriter(shiningFileName)
+    fileWriter = new java.io.FileWriter(multiLineFileName)
     try {
-      fileWriter.write(shiningFileContents)
+      fileWriter.write(multiLineFileContents)
     } finally {
       fileWriter.close()
     }
-    fileWriter = new java.io.FileWriter(helloWorldFileName)
+    fileWriter = new java.io.FileWriter(singleLineFileName)
     try {
-      fileWriter.write(helloWorldFileContents)
+      fileWriter.write(singleLineFileContents)
     } finally {
       fileWriter.close()
     }
@@ -58,8 +57,8 @@ All
 
   override def afterEach(): Unit = {
     new File(emptyFileName).delete
-    new File(shiningFileName).delete
-    new File(helloWorldFileName).delete
+    new File(multiLineFileName).delete
+    new File(singleLineFileName).delete
   }
 
   "FileReader" should "read from an empty file" in {
@@ -68,13 +67,13 @@ All
   }
   
   it should "read from single-line file" in {
-    val contents = reader.readFile(helloWorldFileName)
-    assert(contents.isRight && contents.getOrElse("") == helloWorldFileContents, "Error occurred reading from single-line file")
+    val contents = reader.readFile(singleLineFileName)
+    assert(contents.isRight && contents.getOrElse("") == singleLineFileContents, "Error occurred reading from single-line file")
   }
 
   it should "read from multi-line file" in {
-    val contents = reader.readFile(shiningFileName)
-    assert(contents.isRight && contents.getOrElse("") == shiningFileContents, "Error occurred reading from multi-line file")
+    val contents = reader.readFile(multiLineFileName)
+    assert(contents.isRight && contents.getOrElse("") == multiLineFileContents, "Error occurred reading from multi-line file")
   }
   
   it should "read non-existent file without throwing an exception but would consider it an error case" in {

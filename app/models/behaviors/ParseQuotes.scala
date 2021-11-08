@@ -5,8 +5,6 @@ import play.api.libs.json.{ Json, JsSuccess }
 import com.fasterxml.jackson.core.JsonParseException
 
 trait ParseQuotes {
-  
-
   def parse(sourceJson: String): Either[String, Seq[Quote]] = {
     try {
       Json.parse(sourceJson).validate[Quotes] match {
@@ -17,5 +15,4 @@ trait ParseQuotes {
       case e: JsonParseException => Left(e.getMessage())
     }
   }
-
 }
