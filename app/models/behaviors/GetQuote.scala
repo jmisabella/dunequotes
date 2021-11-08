@@ -13,5 +13,5 @@ trait GetQuote {
     (quote, quotesWithUpdatedSeed)
   }
 
-  // randomQuote, featuredQuote, rotateFeaturedQuote
+  // TODO: define featuredQuote and rotateFeaturedQuote
 }
