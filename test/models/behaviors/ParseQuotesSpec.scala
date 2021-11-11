@@ -104,4 +104,18 @@ class ParseQuotesSpec extends AnyFlatSpec {
       s"Expected result to be an error JSON is of an unexpected schema, but actual result is not an error: actual result [$result]"
     )
   }
+
+  it should "yadda, yadda, yadda" in {
+    val source = "Franklin Delanor Roosevelt"
+    val quote = "The only thing we have to fear is fear itself"
+    val quotes: String = s"""{"quotes":[{"source":"$source","quote":"$quote"},{"source":"$source","quote":"$quote"}]}"""
+    val result = parser.parse(quotes)
+    result match {
+      case Left(e) => assert(false, "Error occurred: " + e)
+      case Right(qs) => {
+        val serialized: String = parser.json(qs)
+        assert(serialized == quotes, s"Expected [$quotes], actual [$serialized]")
+      }
+    }
+  }
 }

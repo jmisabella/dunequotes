@@ -15,4 +15,8 @@ trait ParseQuotes {
       case e: JsonParseException => Left(e.getMessage())
     }
   }
+
+  def json(quotes: Seq[Quote]): String  = {
+    Quotes(quotes).toString()
+  }
 }
