@@ -8,8 +8,8 @@ class ParseQuotesSpec extends AnyFlatSpec {
   case object parser extends ParseQuotes
 
   "ParseQuotes trait" should "parse one quote" in {
-    val source = "Elaine from Seinfeld"
-    val quote = "yadda, yadda, yadda..."
+    val source = "Elaine Benes"
+    val quote = "yada, yada, yada..."
     val quotes: String = s"""
       { "quotes": [
           {
@@ -105,13 +105,13 @@ class ParseQuotesSpec extends AnyFlatSpec {
     )
   }
 
-  it should "yadda, yadda, yadda" in {
+  it should "serialize two quotes into a JSON string" in {
     val source = "Franklin Delanor Roosevelt"
     val quote = "The only thing we have to fear is fear itself"
     val quotes: String = s"""{"quotes":[{"source":"$source","quote":"$quote"},{"source":"$source","quote":"$quote"}]}"""
     val result = parser.parse(quotes)
     result match {
-      case Left(e) => assert(false, "Error occurred: " + e)
+      case Left(e) => assert(false, "Error occurred serializing quotes: " + e)
       case Right(qs) => {
         val serialized: String = parser.json(qs)
         assert(serialized == quotes, s"Expected [$quotes], actual [$serialized]")

@@ -10,19 +10,19 @@ class QuotesFileReaderSpec extends AnyFlatSpec with BeforeAndAfterEach {
   case object reader extends FileReader
   case object parser extends ParseQuotes
 
-  private val singleQuoteContents = """{ "quotes": [{ "source": "Franklin D. Roosevelt", "quote": "The only thing we have to fear is fear itself." }] }"""
-  private val multipleQuoteContents = """{ "quotes": [
+  private val singleQuoteContents = """{"quotes":[{"source":"Franklin D. Roosevelt","quote":"The only thing we have to fear is fear itself."}]}"""
+  private val multipleQuoteContents = """{"quotes":[
     {
-      "source": "Dune",
-      "quote": "The day the flesh shapes and the flesh the day shapes"
-    }, 
+      "source":"Dune",
+      "quote":"The day the flesh shapes and the flesh the day shapes"
+    },
     {
-      "source": "Dune",
-      "quote": "A time to get and a time to lose"
-    }, 
+      "source":"Dune",
+      "quote":"A time to get and a time to lose"
+    },
     {
-      "source": "Dune",
-      "quote": "A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
+      "source":"Dune",
+      "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
     } 
   ]}"""
   private val singleQuoteFileName = "HelloWorld.txt"

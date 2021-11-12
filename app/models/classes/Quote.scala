@@ -10,12 +10,14 @@ object Quote {
 
 case class Quotes(quotes: Seq[Quote]) {
   override def toString(): String = {
-    quotes.map { q => 
+    """{"quotes":[""" +
+    (quotes.map { q => 
       Json.obj(
         "source" -> q.source,
         "quote" -> q.quote
       ).toString()
-    }.mkString("""{"quotes":[""", ",", "]}")
+    // }.mkString("""{"quotes":[""", ",", "]}")
+    }.mkString(",")) + "]}"
   }
 }
 object Quotes {
