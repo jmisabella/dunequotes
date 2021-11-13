@@ -9,20 +9,21 @@ import java.io.File
 class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
   case object quotesIO extends FileReader with FileWriter with ParseQuotes
 
-  private val singleQuoteContents = """{"quotes":[{"source": "Franklin D. Roosevelt", "quote": "The only thing we have to fear is fear itself."}]}"""
+  private val singleQuoteContents = """{"quotes":[{"source":"Franklin D. Roosevelt","quote":"The only thing we have to fear is fear itself."}]}"""
+
   private val multipleQuoteContents = """{"quotes":[
     {
-      "source": "Dune",
-      "quote": "The day the flesh shapes and the flesh the day shapes"
+      "source":"Dune",
+      "quote":"The day the flesh shapes and the flesh the day shapes"
     },
     {
-      "source": "Dune",
-      "quote": "A time to get and a time to lose"
+      "source":"Dune",
+      "quote":"A time to get and a time to lose"
     },
     {
-      "source": "Dune",
-      "quote": "A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
-    } 
+      "source":"Dune",
+      "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
+    }
   ]}"""
 
   private val singleQuoteFileName = "HelloWorld.txt"
@@ -48,7 +49,6 @@ class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
         result match {
           case Left(e) => assert(false, s"Error occurred reading file $singleQuoteFileName: " + e)
           case Right(s) => assert(s == singleQuoteContents, s"Expected [$singleQuoteContents], actual [$s]")
-          // case Right(s) => assert(true, s"Expected [$singleQuoteContents], actual [$s]")
         }
       }
     }
@@ -58,6 +58,8 @@ class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
     quotesIO.parse(multipleQuoteContents) match {
       case Left(e) => assert(false, s"Error occurred parsing multiple quotes: " + e)
       case Right(qs) => {
+        val serialized = quotesIO.json(qs)
+        assert(serialized == trimMultiLine(multipleQuoteContents), s"Error serializing to json")
         quotesIO.writeToFile(multipleQuoteFileName, quotesIO.json(qs))
         val result = quotesIO.readFile(multipleQuoteFileName)
         result match {
@@ -67,4 +69,5 @@ class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
       }
     }
   }
+
 }

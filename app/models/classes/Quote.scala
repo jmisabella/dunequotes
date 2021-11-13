@@ -10,15 +10,12 @@ object Quote {
 
 case class Quotes(quotes: Seq[Quote]) {
   override def toString(): String = {
-    """{"quotes":[""" +
     (quotes.map { q => 
       Json.obj(
         "source" -> q.source,
-        "quote" -> q.quote
-      ).toString()
-    // }.mkString("""{"quotes":[""", ",", "]}")
-    }.mkString(",")) + "]}"
-  }
+        "quote" -> q.quote 
+      ).toString()}).mkString("""{"quotes":[""", "," ,"]}") 
+    } 
 }
 object Quotes {
   implicit val jsonFormat: Format[Quotes] = Json.format[Quotes]

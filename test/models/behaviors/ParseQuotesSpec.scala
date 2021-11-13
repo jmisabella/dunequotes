@@ -36,8 +36,8 @@ class ParseQuotesSpec extends AnyFlatSpec {
   }
 
   it should "parse two different quotes" in {
-    val source1 = "Elaine from Seinfeld"
-    val quote1 = "yadda, yadda, yadda..."
+    val source1 = "Elaine Benes"
+    val quote1 = "yada, yada, yada..."
     val source2 = "Franklin Delanor Roosevelt"
     val quote2 = "The only thing we have to fear is fear itself"
     val quotes: String = s"""
@@ -106,9 +106,11 @@ class ParseQuotesSpec extends AnyFlatSpec {
   }
 
   it should "serialize two quotes into a JSON string" in {
-    val source = "Franklin Delanor Roosevelt"
-    val quote = "The only thing we have to fear is fear itself"
-    val quotes: String = s"""{"quotes":[{"source":"$source","quote":"$quote"},{"source":"$source","quote":"$quote"}]}"""
+    val source1 = "Franklin Delanor Roosevelt"
+    val quote1 = "The only thing we have to fear is fear itself"
+    val source2 = "Jack Torrence"
+    val quote2 = "Here's Johnny!"
+    val quotes: String = s"""{"quotes":[{"source":"$source1","quote":"$quote1"},{"source":"$source2","quote":"$quote2"}]}"""
     val result = parser.parse(quotes)
     result match {
       case Left(e) => assert(false, "Error occurred serializing quotes: " + e)
