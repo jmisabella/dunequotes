@@ -1,6 +1,6 @@
 package models.behaviors
 
-import models.behaviors.{ FileReader, ParseQuotes }
+import models.behaviors.{ FileReader, QuoteSerialization }
 import models.classes.Quote
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfterEach
@@ -8,7 +8,7 @@ import java.io.File
 
 class QuotesFileReaderSpec extends AnyFlatSpec with BeforeAndAfterEach {
   case object reader extends FileReader
-  case object parser extends ParseQuotes
+  case object parser extends QuoteSerialization 
 
   private val singleQuoteContents = """{"quotes":[{"source":"Franklin D. Roosevelt","quote":"The only thing we have to fear is fear itself."}]}"""
   private val multipleQuoteContents = """{"quotes":[
@@ -48,7 +48,7 @@ class QuotesFileReaderSpec extends AnyFlatSpec with BeforeAndAfterEach {
     new File(singleQuoteFileName).delete
   }
 
-  "FileReader and QuoteParser" should "read single quote" in {
+  "FileReader and QuoteSerialization" should "read single quote" in {
     val contents = reader.readFile(singleQuoteFileName)
     contents match {
       case Left(e) => assert(false, s"Error reading from file [$singleQuoteFileName]: $e")

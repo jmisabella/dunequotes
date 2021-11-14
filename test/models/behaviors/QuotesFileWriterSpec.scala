@@ -1,13 +1,13 @@
 package models.behaviors
 
-import models.behaviors.{ FileReader, FileWriter, ParseQuotes }
+import models.behaviors.{ FileReader, FileWriter, QuoteSerialization }
 import models.classes.Quote
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfterEach
 import java.io.File
 
 class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
-  case object quotesIO extends FileReader with FileWriter with ParseQuotes
+  case object quotesIO extends FileReader with FileWriter with QuoteSerialization 
 
   private val singleQuoteContents = """{"quotes":[{"source":"Franklin D. Roosevelt","quote":"The only thing we have to fear is fear itself."}]}"""
 
@@ -38,7 +38,7 @@ class QuotesFileWriterSpec extends AnyFlatSpec with BeforeAndAfterEach {
     new File(multipleQuoteFileName).delete
   }
 
-  "QuoteParser with FileWriter" should "write a single quote to file" in {
+  "QuoteSerialization with FileWriter" should "write a single quote to file" in {
     quotesIO.parse(singleQuoteContents) match {
       case Left(e) => assert(false, s"Error occurred parsing single quote: " + e)
       case Right(qs) => {

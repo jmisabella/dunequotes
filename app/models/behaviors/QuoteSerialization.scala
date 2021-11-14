@@ -4,7 +4,7 @@ import models.classes.{ Quote, Quotes }
 import play.api.libs.json.{ Json, JsSuccess }
 import com.fasterxml.jackson.core.JsonParseException
 
-trait ParseQuotes {
+trait QuoteSerialization {
   def parse(sourceJson: String): Either[String, Seq[Quote]] = {
     try {
       Json.parse(sourceJson).validate[Quotes] match {

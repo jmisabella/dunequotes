@@ -3,9 +3,9 @@ package models.behaviors
 import models.classes.Quote
 import org.scalatest.flatspec.AnyFlatSpec
 
-class ParseQuotesSpec extends AnyFlatSpec {
+class QuoteSerializationSpec extends AnyFlatSpec {
 
-  case object parser extends ParseQuotes
+  case object parser extends QuoteSerialization
 
   "ParseQuotes trait" should "parse one quote" in {
     val source = "Elaine Benes"

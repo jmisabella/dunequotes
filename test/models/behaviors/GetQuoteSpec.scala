@@ -1,12 +1,12 @@
 package models.behaviors
 
-import models.behaviors.{ GetQuote, ParseQuotes }
+import models.behaviors.{ GetQuote, QuoteSerialization }
 import models.classes.{ QuoteBank, Quote }
 import models.utilities.RNG
 import org.scalatest.flatspec.AnyFlatSpec
 
 class GetQuotesSpec extends AnyFlatSpec {
-  private case object parser extends ParseQuotes
+  private case object parser extends QuoteSerialization
   private case object quoteManager extends GetQuote
   private val source1 = "Dune"
   private val quote1 = "The day the flesh shapes and the flesh the day shapes"
