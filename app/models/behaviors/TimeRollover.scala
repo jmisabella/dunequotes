@@ -21,7 +21,7 @@ trait TimeRollover {
     getByOffset(date, numberOfTimeUnitsAfter.abs, format, calendarUnitIdentifier)
   }
 
-  // TODO: test
+  // TODO: testing is showing that this does not work as expected
   def isRollover(previousTime: String, nextTime: String, format: String, calendarUnitIdentifier: Int = Calendar.DATE): Boolean = {
     nextTime == after(previousTime, format, 1, calendarUnitIdentifier)
   }
