@@ -3,7 +3,6 @@ package models.behaviors
 import models.behaviors.FileReader
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfterEach
-
 import java.io.File
 
 class FileReaderSpec extends AnyFlatSpec with BeforeAndAfterEach {

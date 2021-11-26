@@ -1,8 +1,14 @@
+   $(document).ready(function() {
+    // TODO...
+    sendInitToServer(); // temp test (TODO: remove) 
+   });
+    
     var webSocket;
     var messageInput;
 
     function init() {
-        webSocket = new WebSocket("ws://localhost:9000/ws");
+        var host = location.origin.replace(/^https/, 'wss').replace(/^http/, 'ws');
+        webSocket = new WebSocket(`${host}/ws`);
         webSocket.onopen = onOpen;
         webSocket.onclose = onClose;
         webSocket.onmessage = onMessage;
@@ -11,12 +17,14 @@
     }
 
     function onOpen(event) {
-        consoleLog("CONNECTED");
+        consoleLog("CONNECTED to server");
     }
 
     function onClose(event) {
-        consoleLog("DISCONNECTED");
-        appendClientMessageToView(":", "DISCONNECTED");
+        consoleLog("DISCONNECTED from server");
+        consoleLog("Re-initializing a new fresh connection so server will be available for next action");
+        init();
+        // appendClientMessageToView(":", "DISCONNECTED");
     }
 
     function onError(event) {
@@ -90,6 +98,17 @@
 
         // send our json message to the server
         sendToServer(jsonMessage);
+    }
+
+    function sendInitToServer() {
+      messageInput = "featured";
+      if ($.trim(messageInput) == "") {
+          return false;
+      }
+      let jsonMessage = {
+          message: messageInput
+      };
+      sendToServer(jsonMessage);
     }
 
     // send the data to the server using the WebSocket

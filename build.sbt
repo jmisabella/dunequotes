@@ -10,7 +10,8 @@ scalaVersion := "2.13.6"
 libraryDependencies ++= Seq(
   guice,
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.9" % "test"//,
+  "org.scalatest" %% "scalatest" % "3.2.9" % "test",
+  filters
   // "com.typesafe.play" %% "play-json" % "2.7.0"
 )
 

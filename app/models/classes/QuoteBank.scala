@@ -8,7 +8,6 @@ case class QuoteBank(
   history: Seq[Quote], // history of quotes which have been featured 
   historyLimit: Int,   // size of featured quote history
   rng: RNG,            // used when rotating featured quote
-  currentDate: String = "") { // currentDate is used to determine when featured quote should be rotated
+  rolloverTime: String = "") { // rolloverTime is used to determine when featured quote should be rotated
     require(historyLimit <= quotes.length && historyLimit >= 0)
 }
-
