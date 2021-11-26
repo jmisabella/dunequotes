@@ -101,7 +101,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy-MM-dd HH:mm"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to daily rollover 1 day after 2018/08/31" in {
@@ -110,7 +113,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy/MM/dd"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to daily rollover 2 days after 2018-08-31" in {
@@ -119,7 +125,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy-MM-dd"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to daily rollover 3 days after 2021-10-31 12:00:00" in {
@@ -128,7 +137,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy-MM-dd HH:mm:ss"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to daily rollover 4 days after 1980/11/03T12:31:02.233" in {
@@ -137,7 +149,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy/MM/dd'T'HH:mm:ss.SSS"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to daily rollover 365 days after 2021-02-14" in {
@@ -146,7 +161,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true 
     val format = "yyyy-MM-dd"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when NOT to daily rollover 0 days after 2021-10-07" in {
@@ -155,7 +173,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy-MM-dd"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when NOT to daily rollover 1 hour after 2020-03-14 07:30:00" in {
@@ -164,7 +185,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy-MM-dd HH:mm:ss"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when NOT to daily rollover 23 hours after 2017/07/04T11:30" in {
@@ -173,7 +197,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy/MM/dd'T'HH:mm"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when NOT to daily rollover 12 hours before 2021-10-01 00:00:00" in {
@@ -182,7 +209,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy-MM-dd HH:mm:ss"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when NOT to daily rollover 1 day before 2021/10/07" in {
@@ -191,7 +221,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy/MM/dd"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to hourly rollover 1 hours after 2021/10/01T06:30" in {
@@ -200,7 +233,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true
     val format = "yyyy/MM/dd'T'HH:mm"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
   }
 
   it should "know when to hourly rollover 60 minutes after 2021/10/01 07:45:20.124" in {
@@ -208,8 +244,11 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val nextTime = "2021/10/01 08:45:20.124"
     val expected = true
     val format = "yyyy/MM/dd HH:mm:ss.SSS"
-    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
   }
 
   it should "know when to hourly rollover 7 hours after 2002-07-01 03" in {
@@ -218,7 +257,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true
     val format = "yyyy-MM-dd HH"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
   it should "know when to hourly rollover 1 day after 2018/08/31T11" in {
@@ -227,7 +269,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true
     val format = "yyyy/MM/dd'T'HH"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
   }
 
   it should "know when to hourly rollover 60 minutes after 2021-10-07 05" in {
@@ -236,7 +281,10 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = true
     val format = "yyyy-MM-dd HH"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
   }
   
   it should "know when NOT to hourly rollover 0 hours after 2021/10/07 00:30" in {
@@ -245,16 +293,46 @@ class TimeRolloverSpec extends AnyFlatSpec {
     val expected = false
     val format = "yyyy/MM/dd HH:mm"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
   }
 
-  it should "know when NOT to hourly rollover 59 minutes after 2021-10-07 00" in {
+  it should "know when to hourly rollover 59 minutes after 2021-10-07 00" in {
     val originalTime = "2021-10-07 00"
     val nextTime = "2021-10-07 59"
-    val expected = false
+    val expected = true
     val format = "yyyy-MM-dd HH"
     val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.HOUR_OF_DAY)
-    assert(result == expected, s"Expected [$expected], actual [$result]")
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
+  }
+
+  it should "know when NOT to daily rollover 59 minutes after 2021-10-07 01" in {
+    val originalTime = "2021-10-07 01"
+    val nextTime = "2021-10-08 00"
+    val expected = false
+    val format = "yyyy-MM-dd HH"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
+  }
+
+  it should "know when to daily rollover 60 minutes after 2021-10-07 01" in {
+    val originalTime = "2021-10-07 01"
+    val nextTime = "2021-10-08 01"
+    val expected = true
+    val format = "yyyy-MM-dd HH"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
 }
