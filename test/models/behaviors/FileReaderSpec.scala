@@ -79,4 +79,25 @@ All
     val contents = reader.readFile(nonExistentFileName)
     assert(contents.isLeft, "Expected error when reading non-existing but actually read the file without any errors! File contents: [${contents.getOrElse(None)}]")
   }
+
+  it should "get last-modified date from single-line file" in {
+    val lastModified = reader.lastModified(singleLineFileName)
+    println(s"LAST MODIFIED: [$lastModified]")
+    assert(lastModified.isRight, s"Expected no error, actually observed: [${lastModified.getOrElse(None)}]")
+    assert(lastModified.getOrElse(None) != null && lastModified.getOrElse(None) != "", s"Expected non-empty value, actually observed: [${lastModified.getOrElse(None)}]")
+  }
+
+  it should "get last-modified date from multi-line file" in {
+    val lastModified = reader.lastModified(multiLineFileName)
+    println(s"LAST MODIFIED: [$lastModified]")
+    assert(lastModified.isRight, s"Expected no error, actually observed: [${lastModified.getOrElse(None)}]")
+    assert(lastModified.getOrElse(None) != null && lastModified.getOrElse(None) != "", s"Expected non-empty value, actually observed: [${lastModified.getOrElse(None)}]")
+  }
+
+  it should "get attempt to get last-modified date from empty file" in {
+    val lastModified = reader.lastModified(emptyFileName)
+    println(s"LAST MODIFIED: [$lastModified]")
+    assert(lastModified.isRight, s"Expected error but no error occurred, actually observed: [${lastModified.getOrElse(None)}]")
+  }
+
 }

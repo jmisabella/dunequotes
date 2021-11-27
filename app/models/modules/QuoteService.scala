@@ -8,7 +8,7 @@ private object serializationService extends QuoteSerialization
 private object rolloverService extends TimeRollover 
 private object getQuoteService extends GetQuote
 
-object QuoteService extends Configuration {
+object QuoteService extends StateManagement {
   override type _FileReader = FileReader
   override type _FileWriter = FileWriter
   override type _QuoteSerialization = QuoteSerialization

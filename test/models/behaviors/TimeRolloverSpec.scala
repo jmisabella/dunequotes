@@ -335,4 +335,75 @@ class TimeRolloverSpec extends AnyFlatSpec {
       s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.DATE)}]")
   }
 
+  it should "know when to minute rollover 1 minute after 2021-11-27 17:00:00" in {
+    val originalTime = "2021-11-27 17:00:00"
+    val nextTime = "2021-11-27 17:01:00"
+    val expected = true
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.MINUTE)}]")
+  }
+
+  it should "know when to minute rollover 4 minutes after 2021-11-27 17:00:00" in {
+    val originalTime = "2021-11-27 17:00:00"
+    val nextTime = "2021-11-27 17:04:00"
+    val expected = true
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 4, Calendar.MINUTE)}]")
+  }
+
+  it should "know when to minute rollover 1 hour after 2021-11-27 17:00:00" in {
+    val originalTime = "2021-11-27 17:00:00"
+    val nextTime = "2021-11-27 18:00:00"
+    val expected = true
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 1, Calendar.HOUR_OF_DAY)}]")
+  }
+
+  it should "know when NOT to minute rollover 30 seconds after 2021-11-27 17:00:00" in {
+    val originalTime = "2021-11-27 17:00:00"
+    val nextTime = "2021-11-27 17:00:30"
+    val expected = false
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; " + 
+      s"expected next [$nextTime], actual next [${timeRollover.after(originalTime, format, 30, Calendar.SECOND)}]")
+  }
+
+  it should "know when to minute rollover when previous time is missing (empty) from history and new time is 2021-11-27 17:01:00" in {
+    val originalTime: String = ""
+    val nextTime = "2021-11-27 17:01:00"
+    val expected = true
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.MINUTE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; ")
+  }
+
+  it should "know when to daily rollover when previous time is missing (null) from history and new time is 2021-11-27 17:01:00" in {
+    val originalTime: String = null 
+    val nextTime = "2021-11-27 17:01:00"
+    val expected = true
+    val format = "yyyy-MM-dd HH:mm:ss"
+    val result = timeRollover.isRollover(originalTime, nextTime, format, Calendar.DATE)
+    assert(
+      result == expected, 
+      s"Expected result [$expected], actual result [$result]; ")
+  }
+
+
 }

@@ -20,7 +20,6 @@ trait FileReader {
     }
   }
 
-  // TODO: test
   def lastModified(source: String): Either[String, String] = {
     try {
       val last: Long = new File(source).lastModified()
