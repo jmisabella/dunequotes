@@ -28,7 +28,7 @@ class SimpleWebSocketActor(clientActorRef: ActorRef) extends Actor {
         //     ???
         //   }
         //   case r => Left(s"Unexpected request [$r]")
-        // } 
+        // }
         val json: JsValue = Json.parse(s"""{"body": "You said, ‘$clientMessage’"}""")
         clientActorRef ! (json)
   }

@@ -46,7 +46,7 @@ trait StateManagement {
     } 
   }
 
-  // TODO: test 
+  // TODO: test
   def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
     val quotes = reader.readFile(quotesConfigPath)
     val history = reader.readFile(historyConfigPath)
