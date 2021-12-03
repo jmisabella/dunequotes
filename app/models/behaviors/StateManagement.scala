@@ -5,7 +5,7 @@ import models.utilities.RNG
 import models.behaviors._
 import scala.util.Random
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.{ Date, Calendar }
 
 trait StateManagement {
   type _FileReader <: FileReader
@@ -21,14 +21,16 @@ trait StateManagement {
 
   // TODO: test
   // rotate history if neccessary, will either return existing state or the next state if history is rotated
-  def state(currentState: QuoteBank, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
+  def state(currentState: QuoteBank, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
     currentState match {
       case null => initialState(quotesConfigPath, historyConfigPath, historyLimit, randomSeed)
       case s => {
         // now need to see if it is time to rollover
         val format = "yyyy-MM-dd HH:mm:ss.SSS"
         val currentTime = new SimpleDateFormat(format).format(new Date())
-        val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format)
+        println("CALENDAR UNIT: " + rolloverTimeIntervalUnit)
+        val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, rolloverTimeIntervalUnit)
+        // val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, Calendar.DATE)
         isRollover match {
           case false => Right(s) // not yet time to rollover
           case true => {
@@ -47,7 +49,7 @@ trait StateManagement {
   }
 
   // TODO: test
-  def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
+  def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
     val quotes = reader.readFile(quotesConfigPath)
     val history = reader.readFile(historyConfigPath)
     (quotes, history) match {
@@ -60,7 +62,14 @@ trait StateManagement {
         case (_, Left(h)) => Left(s"Error deserializing history: [$h]")
         case (Right(qs), Right(hs)) => reader.lastModified(historyConfigPath) match { // determine time of last rollover 
           case Left(m) => Left(m)
-          case Right(m) => state(QuoteBank(qs, hs, historyLimit, RNG.RandomSeed(randomSeed), m), quotesConfigPath, historyConfigPath, historyLimit, randomSeed)
+          case Right(m) => {
+            state(
+              QuoteBank(qs, hs, historyLimit, RNG.RandomSeed(randomSeed), m, rolloverTimeIntervalUnit), 
+              quotesConfigPath, 
+              historyConfigPath, 
+              historyLimit, 
+              rolloverTimeIntervalUnit)
+          }
         }
       }
     }

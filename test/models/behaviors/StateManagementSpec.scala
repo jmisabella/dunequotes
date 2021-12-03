@@ -1,21 +1,31 @@
 package models.behaviors
 
 import models.behaviors._
+import models.classes.{ Quote, QuoteBank }
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfterEach
 import java.io.File
+import java.util.Calendar
 
 class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
-  private val singleQuote = """{"quotes":[{"source":"Franklin D. Roosevelt","quote":"The only thing we have to fear is fear itself."}]}"""
-  private val multipleQuotes = """{"quotes":[
-    {
-      "source":"Dune",
-      "quote":"The day the flesh shapes and the flesh the day shapes"
-    },
-    {
-      "source":"Dune",
-      "quote":"A time to get and a time to lose"
-    },
+  private object fileReaderService extends FileReader
+  private object fileWriterService extends FileWriter
+  private object serializationService extends QuoteSerialization
+  private object rolloverService extends TimeRollover 
+  private object getQuoteService extends GetQuote
+  private object mgmt extends FileReader with FileWriter with QuoteSerialization with TimeRollover with GetQuote with StateManagement {
+    override type _FileReader = FileReader
+    override type _FileWriter = FileWriter
+    override type _QuoteSerialization = QuoteSerialization
+    override type _TimeRollover = TimeRollover
+    override type _GetQuote = GetQuote
+    override val reader: FileReader = fileReaderService
+    override val writer: FileWriter = fileWriterService
+    override val serialization: QuoteSerialization = serializationService
+    override val rollover: TimeRollover = rolloverService
+    override val getQuote: GetQuote = getQuoteService
+  } 
+  private val quotes = """{"quotes":[
     {
       "source":"Dune",
       "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
@@ -34,31 +44,80 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     }, 
     {
       "source": "God Emperor of Dune",
-      "quote": "Wealth is a tool of freedom. But the pursuit of wealth is the way to slavery."
-    }, 
-    {
-      "source": "God Emperor of Dune",
       "quote": "The Golden Path endures."
     }
   ]}"""
-  private val emptyHistory = """{"quotes":[ ]}"""
   private val emptyQuotes = """{"quotes":[ ]}"""
+  private val emptyHistory = """{"quotes":[ ]}"""
+  private val historySize1 = """{"quotes":[
+    {
+      "source": "Children of Dune",
+      "quote": "Those who sought the future hoped to gain the winning gamble on tomorrow's race. Instead they found themselves trapped into a lifetime whose every heartbeat and anguished wail was known."
+    } 
+  ]}"""
+  private val historySize2 = """{"quotes":[
+    {
+      "source": "Children of Dune",
+      "quote": "Those who sought the future hoped to gain the winning gamble on tomorrow's race. Instead they found themselves trapped into a lifetime whose every heartbeat and anguished wail was known."
+    }, 
+    {
+      "source":"Dune",
+      "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
+    }
+  ]}"""
+  private val historySize4 = """{"quotes":[
+    {
+      "source": "Children of Dune",
+      "quote": "Those who sought the future hoped to gain the winning gamble on tomorrow's race. Instead they found themselves trapped into a lifetime whose every heartbeat and anguished wail was known."
+    }, 
+    {
+      "source":"Dune",
+      "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
+    },
+    {
+      "source": "Children of Dune",
+      "quote": "The joy of living, its beauty is all bound up in the fact that life can surprise you"
+    }, 
+    {
+      "source": "Children of Dune",
+      "quote": "One discovers the future in the past, and both are part of a whole."
+    } 
+  ]}"""
+  private val historySize5 = """{"quotes":[
+    {
+      "source": "God Emperor of Dune",
+      "quote": "The Golden Path endures."
+    },
+    {
+      "source": "Children of Dune",
+      "quote": "Those who sought the future hoped to gain the winning gamble on tomorrow's race. Instead they found themselves trapped into a lifetime whose every heartbeat and anguished wail was known."
+    }, 
+    {
+      "source":"Dune",
+      "quote":"A time to keep and a time to cast away; a time for love and a time to hate; a time of war and a time of peace."
+    },
+    {
+      "source": "Children of Dune",
+      "quote": "The joy of living, its beauty is all bound up in the fact that life can surprise you"
+    }, 
+    {
+      "source": "Children of Dune",
+      "quote": "One discovers the future in the past, and both are part of a whole."
+    } 
+  ]}"""
 
-  private val singleQuoteFileName = "singleQuote.json"
-  private val multipleQuoteFileName = "multipleQuotes.json"
-  private val emptyHistoryFileName = "emptyHistory.json"
+  private val quotesFileName = "quotes.json"
   private val emptyQuotesFileName = "emptyQuotes.json"
+  private val emptyHistoryFileName = "emptyHistory.json"
+  private val historySize1FileName = "history1.json"
+  private val historySize2FileName = "history2.json"
+  private val historySize4FileName = "history4.json"
+  private val historySize5FileName = "history5.json"
 
   override def beforeEach(): Unit = {
-    var fileWriter = new java.io.FileWriter(multipleQuoteFileName)
+    var fileWriter = new java.io.FileWriter(quotesFileName)
     try {
-      fileWriter.write(multipleQuotes)
-    } finally {
-      fileWriter.close()
-    }
-    fileWriter = new java.io.FileWriter(singleQuoteFileName)
-    try {
-      fileWriter.write(singleQuote)
+      fileWriter.write(quotes)
     } finally {
       fileWriter.close()
     }
@@ -74,21 +133,151 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     } finally {
       fileWriter.close()
     }
+    fileWriter = new java.io.FileWriter(historySize1FileName)
+    try {
+      fileWriter.write(historySize1)
+    } finally {
+      fileWriter.close()
+    }
+    fileWriter = new java.io.FileWriter(historySize2FileName)
+    try {
+      fileWriter.write(historySize2)
+    } finally {
+      fileWriter.close()
+    }
+    fileWriter = new java.io.FileWriter(historySize4FileName)
+    try {
+      fileWriter.write(historySize4)
+    } finally {
+      fileWriter.close()
+    }
+    fileWriter = new java.io.FileWriter(historySize5FileName)
+    try {
+      fileWriter.write(historySize5)
+    } finally {
+      fileWriter.close()
+    }
   }
 
   override def afterEach(): Unit = {
-    new File(multipleQuoteFileName).delete
-    new File(singleQuoteFileName).delete
+    new File(quotesFileName).delete
     new File(emptyHistoryFileName).delete
     new File(emptyQuotesFileName).delete
+    new File(historySize1FileName).delete
+    new File(historySize2FileName).delete
+    new File(historySize4FileName).delete
+    new File(historySize5FileName).delete
   }
 
-  // TODO
-  // "StateManagement behavior" should "???" in {
+  private def readQuotes(source: String): Seq[Quote] = {
+    val lines: String = mgmt.readFile(source) match {
+      case Left(e) => throw new RuntimeException(e)
+      case Right(ls) => ls
+    }
+    val quotes: Seq[Quote] = mgmt.parse(lines) match {
+      case Left(e) => throw new RuntimeException(e)
+      case Right(qs) => qs
+    }
+    quotes
+  }
+
+  "StateManagement behavior" should "initialize minute rollover state when history file is empty" in {
+    val quotes: Seq[Quote] = readQuotes(quotesFileName)
+    val history: Seq[Quote] = readQuotes(emptyHistoryFileName)
+    val historyLimit: Int = 3
+    val state: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, emptyHistoryFileName, historyLimit, Calendar.MINUTE)
+    assert(state.isRight, s"Expected state to be initialized but an error occurred: $state")
+    assert(state.getOrElse(QuoteBank()).history == history, s"Expected history [${history}], actual [${state.getOrElse(QuoteBank()).history}]")
+    assert(state.getOrElse(QuoteBank()).quotes == quotes, s"Expected quotes [${quotes}], actual [${state.getOrElse(QuoteBank()).quotes}]")
+  }
+
+  it should "fail to initialize minute rollover state when history file is missing" in {
+    val historyLimit: Int = 3
+    val state: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, "non-existent-history-file.json", historyLimit, Calendar.MINUTE)
+    assert(state.isLeft, s"Expected failure because history file [non-existent-history-file.json] does not exist yet history was successfully read: $state")
+  }
+
+  it should "initialize minute rollover state when history size is 1" in {
+    val quotes: Seq[Quote] = readQuotes(quotesFileName)
+    val history: Seq[Quote] = readQuotes(historySize1FileName)
+    val historyLimit: Int = 3
+    val state: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
+    assert(state.isRight, s"Expected state to be initialized but an error occurred: $state")
+    assert(state.getOrElse(QuoteBank()).history == history, s"Expected history [${history}], actual [${state.getOrElse(QuoteBank()).history}]")
+    assert(state.getOrElse(QuoteBank()).quotes == quotes, s"Expected quotes [${quotes}], actual [${state.getOrElse(QuoteBank()).quotes}]")
+  }
+
+  // it should "initialize minute rollover state when history size is 1 and 20 seconds have passed" in {
   //   ???
   // }
 
-  // it should "???" in {
+  // it should "initialize minute rollover state when history size is 1 and 1 minute has passed" in {
+  //   ???
+  // }
+
+  // it should "initialize minute rollover state when history size is 2 and 25 seconds have passed" in {
+  //   ???
+  // }
+
+  // it should "initialize minute rollover state when history size is 2 and 62 seconds have passed" in {
+  //   ???
+  // }
+
+  // //////
+  // it should "get minute rollover state when state is null and history file is missing and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history file is empty and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history size is 1 and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history size is 1 and 20 seconds have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history size is 1 and 1 minute has passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history size is 2 and 25 seconds have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state is null and history size is 2 and 62 seconds have passed" in {
+  //   ???
+  // }
+
+  // //////
+  // it should "get minute rollover state when state already exists and history file is missing and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history file is empty and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history size is 1 and 0 minutes have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history size is 1 and 20 seconds have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history size is 1 and 1 minute has passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history size is 2 and 25 seconds have passed" in {
+  //   ???
+  // }
+
+  // it should "get minute rollover state when state already exists and history size is 2 and 62 seconds have passed" in {
   //   ???
   // }
 
