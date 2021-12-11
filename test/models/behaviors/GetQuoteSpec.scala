@@ -1,7 +1,7 @@
 package models.behaviors
 
 import models.behaviors.{ GetQuote, QuoteSerialization }
-import models.classes.{ QuoteBank, Quote }
+import models.classes.{ State, Quote }
 import models.utilities.RNG
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -47,7 +47,7 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Nil
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
     val featured: Option[Quote] = quoteManager.featuredQuote(initialState)
     assert(featured.isEmpty, s"When history is empty, expected featured quote to also be empty, however got the value ${featured.getOrElse(None)}")
   }
@@ -58,7 +58,7 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes.head)
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
     val featured: Option[Quote] = quoteManager.featuredQuote(initialState)
     assert(featured.isDefined, s"Expected featured quote to be defined, however featured quote is empty")
     assert(featured.get.source == source1, s"Expected source [$source1], actual source [${featured.get.source}]")
@@ -71,7 +71,7 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes(0), quotes(1))
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
     val featured: Option[Quote] = quoteManager.featuredQuote(initialState)
     assert(featured.isDefined, s"Expected featured quote to be defined, however featured quote is empty")
     assert(featured.get.source == quotes(1).source, s"Expected source [${quotes(1).source}], actual source [${featured.get.source}]")
@@ -84,7 +84,7 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes(0), quotes(1), quotes(2))
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
     val featured: Option[Quote] = quoteManager.featuredQuote(initialState)
     assert(featured.isDefined, s"Expected featured quote to be defined, however featured quote is empty")
     assert(featured.get.source == quotes(2).source, s"Expected source [${quotes(2).source}], actual source [${featured.get.source}]")
@@ -97,8 +97,8 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Nil
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
-    val nextState: QuoteBank = quoteManager.rotateFeaturedQuote(initialState)
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val nextState: State = quoteManager.rotateFeaturedQuote(initialState)
     val featured: Option[Quote] = quoteManager.featuredQuote(nextState)
     assert(nextState.history.length == 1, s"Expecting next state's history to have 1 quote, however next state's history length is [${nextState.history.length}]")
     assert(featured.isDefined, s"Expected next state's featured quote to exist but it is empty")
@@ -111,8 +111,8 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes(0))
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
-    val nextState: QuoteBank = quoteManager.rotateFeaturedQuote(initialState)
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val nextState: State = quoteManager.rotateFeaturedQuote(initialState)
     val featured: Option[Quote] = quoteManager.featuredQuote(nextState)
     assert(nextState.history.length == 2, s"Expecting next state's history to have 2 quotes, however next state's history length is [${nextState.history.length}]")
     assert(featured.isDefined, s"Expected next state's featured quote to exist but it is empty")
@@ -125,8 +125,8 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes(0), quotes(1))
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
-    val nextState: QuoteBank = quoteManager.rotateFeaturedQuote(initialState)
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val nextState: State = quoteManager.rotateFeaturedQuote(initialState)
     val featured: Option[Quote] = quoteManager.featuredQuote(nextState)
     assert(nextState.history.length == 3, s"Expecting next state's history to have 3 quotes, however next state's history length is [${nextState.history.length}]")
     assert(featured.isDefined, s"Expected next state's featured quote to exist but it is empty")
@@ -139,8 +139,8 @@ class GetQuotesSpec extends AnyFlatSpec {
       case Right(qs) => qs
     }
     val history: Seq[Quote] = Seq(quotes(0), quotes(1), quotes(2))
-    val initialState = QuoteBank(quotes, history, historyLimit, RNG.RandomSeed(seed))
-    val nextState: QuoteBank = quoteManager.rotateFeaturedQuote(initialState)
+    val initialState = State(quotes, history, historyLimit, RNG.RandomSeed(seed))
+    val nextState: State = quoteManager.rotateFeaturedQuote(initialState)
     val featured: Option[Quote] = quoteManager.featuredQuote(nextState)
     assert(initialState.historyLimit == 3, s"Expected initial state's historyLimit to be 3, but it was actually [${initialState.historyLimit}]")
     assert(history.length == 3, s"Expected initial history to be 3, but it was actually [${history.length}]")

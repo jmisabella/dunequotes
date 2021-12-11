@@ -1,7 +1,7 @@
 package models.behaviors
 
 import models.behaviors._
-import models.classes.{ Quote, QuoteBank }
+import models.classes.{ Quote, State }
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfterEach
 import java.io.File
@@ -185,15 +185,15 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val quotes: Seq[Quote] = readQuotes(quotesFileName)
     val history: Seq[Quote] = readQuotes(emptyHistoryFileName)
     val historyLimit: Int = 3
-    val state: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, emptyHistoryFileName, historyLimit, Calendar.MINUTE)
+    val state: Either[String, State] = mgmt.initialState(quotesFileName, emptyHistoryFileName, historyLimit, Calendar.MINUTE)
     assert(state.isRight, s"Expected state to be initialized but an error occurred: $state")
-    assert(state.getOrElse(QuoteBank()).history == history, s"Expected history [${history}], actual [${state.getOrElse(QuoteBank()).history}]")
-    assert(state.getOrElse(QuoteBank()).quotes == quotes, s"Expected quotes [${quotes}], actual [${state.getOrElse(QuoteBank()).quotes}]")
+    assert(state.getOrElse(State()).history == history, s"Expected history [${history}], actual [${state.getOrElse(State()).history}]")
+    assert(state.getOrElse(State()).quotes == quotes, s"Expected quotes [${quotes}], actual [${state.getOrElse(State()).quotes}]")
   }
 
   it should "fail to initialize minute rollover state when history file is missing" in {
     val historyLimit: Int = 3
-    val state: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, "non-existent-history-file.json", historyLimit, Calendar.MINUTE)
+    val state: Either[String, State] = mgmt.initialState(quotesFileName, "non-existent-history-file.json", historyLimit, Calendar.MINUTE)
     assert(state.isLeft, s"Expected failure because history file [non-existent-history-file.json] does not exist yet history was successfully read: $state")
   }
 
@@ -201,9 +201,9 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val quotes: Seq[Quote] = readQuotes(quotesFileName)
     val history: Seq[Quote] = readQuotes(historySize1FileName)
     val historyLimit: Int = 3
-    val stateCheck: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
+    val stateCheck: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
     assert(stateCheck.isRight, s"Expected state to be initialized but an error occurred: $stateCheck")
-    val state: QuoteBank = stateCheck.getOrElse(QuoteBank()) 
+    val state: State = stateCheck.getOrElse(State()) 
     assert(state.history == history, s"Expected history [${history}], actual [${state.history}]")
     assert(state.quotes == quotes, s"Expected quotes [${quotes}], actual [${state.quotes}]")
   }
@@ -212,15 +212,15 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val quotes: Seq[Quote] = readQuotes(quotesFileName)
     val history: Seq[Quote] = readQuotes(historySize1FileName)
     val historyLimit: Int = 3
-    val state1Check: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
+    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
     assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
-    val state1: QuoteBank = state1Check.getOrElse(QuoteBank())
+    val state1: State = state1Check.getOrElse(State())
     assert(state1.history == history, s"Expected history [${history}], actual [${state1.history}]")
     assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
     Thread.sleep(20000)
-    val state2Check: Either[String, QuoteBank] = mgmt.state(state1, quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE, state1.rng.nextInt._1)
+    val state2Check: Either[String, State] = mgmt.state(state1, quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE, state1.rng.nextInt._1)
     assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
-    val state2: QuoteBank = state2Check.getOrElse(QuoteBank())
+    val state2: State = state2Check.getOrElse(State())
     assert(state2.history == history, s"Expected history [${history}], actual [${state2.history}]")
     assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
   }
@@ -229,15 +229,15 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val quotes: Seq[Quote] = readQuotes(quotesFileName)
     val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
     val historyLimit: Int = 3
-    val state1Check: Either[String, QuoteBank] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
+    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
     assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
-    val state1: QuoteBank = state1Check.getOrElse(QuoteBank())
+    val state1: State = state1Check.getOrElse(State())
     assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
     assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
     Thread.sleep(60000)
-    val state2Check: Either[String, QuoteBank] = mgmt.state(state1, quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE, state1.rng.nextInt._1)
+    val state2Check: Either[String, State] = mgmt.state(state1, quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE, state1.rng.nextInt._1)
     assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
-    val state2: QuoteBank = state2Check.getOrElse(QuoteBank())
+    val state2: State = state2Check.getOrElse(State())
     assert(state2.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length}], actual [${state2.history.length}]")
     assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
   }

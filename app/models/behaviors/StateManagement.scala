@@ -1,6 +1,6 @@
 package models.behaviors
 
-import models.classes.QuoteBank
+import models.classes.State
 import models.utilities.RNG
 import models.behaviors._
 import scala.util.Random
@@ -20,7 +20,7 @@ trait StateManagement {
   val getQuote: _GetQuote 
 
   // rotate history if neccessary, will either return existing state or the next state if history is rotated
-  def state(currentState: QuoteBank, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
+  def state(currentState: State, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, State] = {
     currentState match {
       case null => initialState(quotesConfigPath, historyConfigPath, historyLimit, randomSeed)
       case s => {
@@ -34,7 +34,7 @@ trait StateManagement {
           case false => Right(s) // not yet time to rollover
           case true => {
             // time to rollover, so determine next featured quote and write it to history config 
-            val nextState: QuoteBank = getQuote.rotateFeaturedQuote(s) 
+            val nextState: State = getQuote.rotateFeaturedQuote(s) 
             try {
               writer.writeToFile(historyConfigPath, serialization.json(nextState.history))
             } catch {
@@ -47,7 +47,34 @@ trait StateManagement {
     } 
   }
 
-  def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
+  // def state(currentState: State, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, State] = {
+  //   currentState match {
+  //     case null => initialState(quotesConfigPath, historyConfigPath, historyLimit, randomSeed)
+  //     case s => {
+  //       // now need to see if it is time to rollover
+  //       val format = "yyyy-MM-dd HH:mm:ss.SSS"
+  //       val currentTime = new SimpleDateFormat(format).format(new Date())
+  //       println("CALENDAR UNIT: " + rolloverTimeIntervalUnit)
+  //       val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, rolloverTimeIntervalUnit)
+  //       // val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, Calendar.DATE)
+  //       isRollover match {
+  //         case false => Right(s) // not yet time to rollover
+  //         case true => {
+  //           // time to rollover, so determine next featured quote and write it to history config 
+  //           val nextState: State = getQuote.rotateFeaturedQuote(s) 
+  //           try {
+  //             writer.writeToFile(historyConfigPath, serialization.json(nextState.history))
+  //           } catch {
+  //             case e: Exception => Left(s"Error writing history to [$historyConfigPath]: ${e.getMessage()}")
+  //           }
+  //           Right(nextState.copy(rolloverTime = currentTime))  
+  //         }
+  //       }
+  //     }
+  //   } 
+  // }
+
+  def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, State] = {
     val quotes = reader.readFile(quotesConfigPath)
     val history = reader.readFile(historyConfigPath)
     (quotes, history) match {
@@ -62,7 +89,7 @@ trait StateManagement {
           case Left(m) => Left(m)
           case Right(m) => {
             state(
-              QuoteBank(qs, hs, historyLimit, RNG.RandomSeed(randomSeed), m, rolloverTimeIntervalUnit), 
+              State(qs, hs, historyLimit, RNG.RandomSeed(randomSeed), m, rolloverTimeIntervalUnit), 
               quotesConfigPath, 
               historyConfigPath, 
               historyLimit, 
