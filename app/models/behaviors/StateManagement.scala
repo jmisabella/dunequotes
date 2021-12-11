@@ -19,7 +19,6 @@ trait StateManagement {
   val rollover: _TimeRollover
   val getQuote: _GetQuote 
 
-  // TODO: test
   // rotate history if neccessary, will either return existing state or the next state if history is rotated
   def state(currentState: QuoteBank, quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
     currentState match {
@@ -48,7 +47,6 @@ trait StateManagement {
     } 
   }
 
-  // TODO: test
   def initialState(quotesConfigPath: String, historyConfigPath: String, historyLimit: Int = 60, rolloverTimeIntervalUnit: Int = Calendar.DATE, randomSeed: Int = Random.nextInt()): Either[String, QuoteBank] = {
     val quotes = reader.readFile(quotesConfigPath)
     val history = reader.readFile(historyConfigPath)
