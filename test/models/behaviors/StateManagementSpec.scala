@@ -208,7 +208,65 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     assert(state.quotes == quotes, s"Expected quotes [${quotes}], actual [${state.quotes}]")
   }
 
-  it should "get minute rollover state but NOT rollover when history size is 1 and 20 seconds have passed" in {
+
+  it should "get second rollover state and NOT rollover when history size is 1 and 600 milliseconds have passed" in {
+    val quotes: Seq[Quote] = readQuotes(quotesFileName)
+    val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
+    val historyLimit: Int = 3
+    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.SECOND)
+    assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
+    val state1: State = state1Check.getOrElse(State())
+    assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
+    assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
+    Thread.sleep(600)
+    val state2Check: Either[String, State] = mgmt.nextState(state1)
+    assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
+    val state2: State = state2Check.getOrElse(State())
+    assert(state2.history == initialHistory, s"Expected history [${initialHistory}], actual [${state2.history}]")
+    assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
+  }
+
+
+  it should "get second rollover state and rollover when history size is 1 and 1 second has passed" in {
+    val quotes: Seq[Quote] = readQuotes(quotesFileName)
+    val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
+    val historyLimit: Int = 3
+    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.SECOND)
+    assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
+    val state1: State = state1Check.getOrElse(State())
+    assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
+    assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
+    Thread.sleep(1000)
+    val state2Check: Either[String, State] = mgmt.nextState(state1)
+    assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
+    val state2: State = state2Check.getOrElse(State())
+    assert(state2.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length + 1}], actual [${state2.history.length}]")
+    assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
+  }
+  
+  it should "get second rollover state and rollover when history size is 1 and 2 seconds have passed" in {
+    val quotes: Seq[Quote] = readQuotes(quotesFileName)
+    val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
+    val historyLimit: Int = 3
+    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.SECOND)
+    assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
+    val state1: State = state1Check.getOrElse(State())
+    assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
+    assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
+    Thread.sleep(2000)
+    val state2Check: Either[String, State] = mgmt.nextState(state1)
+    assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
+    val state2: State = state2Check.getOrElse(State())
+    assert(state2.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length + 1}], actual [${state2.history.length}]")
+    assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
+    val state3Check: Either[String, State] = mgmt.nextState(state2)
+    assert(state3Check.isRight, s"Expected state to be initialized but an error occurred: $state3Check")
+    val state3: State = state3Check.getOrElse(State())
+    assert(state3.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length + 1}], actual [${state3.history.length}]")
+    assert(state3.quotes == quotes, s"Expected quotes [${quotes}], actual [${state3.quotes}]")
+  }
+  
+  it should "get minute rollover state but NOT rollover when history size is 1 and 5 seconds have passed" in {
     val quotes: Seq[Quote] = readQuotes(quotesFileName)
     val history: Seq[Quote] = readQuotes(historySize1FileName)
     val historyLimit: Int = 3
@@ -217,30 +275,30 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val state1: State = state1Check.getOrElse(State())
     assert(state1.history == history, s"Expected history [${history}], actual [${state1.history}]")
     assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
-    Thread.sleep(20000)
+    Thread.sleep(5000)
     val state2Check: Either[String, State] = mgmt.nextState(state1)
     assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
     val state2: State = state2Check.getOrElse(State())
     assert(state2.history == history, s"Expected history [${history}], actual [${state2.history}]")
     assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
   }
-
-  it should "get minute rollover state and rollover when history size is 1 and 1 minute has passed" in {
-    val quotes: Seq[Quote] = readQuotes(quotesFileName)
-    val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
-    val historyLimit: Int = 3
-    val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
-    assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
-    val state1: State = state1Check.getOrElse(State())
-    assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
-    assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
-    Thread.sleep(60000)
-    val state2Check: Either[String, State] = mgmt.nextState(state1)
-    assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
-    val state2: State = state2Check.getOrElse(State())
-    assert(state2.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length}], actual [${state2.history.length}]")
-    assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
-  }
+  
+  // it should "get minute rollover state and rollover when history size is 1 and 1 minute has passed" in {
+  //   val quotes: Seq[Quote] = readQuotes(quotesFileName)
+  //   val initialHistory: Seq[Quote] = readQuotes(historySize1FileName)
+  //   val historyLimit: Int = 3
+  //   val state1Check: Either[String, State] = mgmt.initialState(quotesFileName, historySize1FileName, historyLimit, Calendar.MINUTE)
+  //   assert(state1Check.isRight, s"Expected state to be initialized but an error occurred: $state1Check")
+  //   val state1: State = state1Check.getOrElse(State())
+  //   assert(state1.history == initialHistory, s"Expected history [${initialHistory}], actual [${state1.history}]")
+  //   assert(state1.quotes == quotes, s"Expected quotes [${quotes}], actual [${state1.quotes}]")
+  //   Thread.sleep(60000)
+  //   val state2Check: Either[String, State] = mgmt.nextState(state1)
+  //   assert(state2Check.isRight, s"Expected state to be initialized but an error occurred: $state2Check")
+  //   val state2: State = state2Check.getOrElse(State())
+  //   assert(state2.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length}], actual [${state2.history.length}]")
+  //   assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
+  // }
 
   // it should "initialize minute rollover state when history size is 2 and 25 seconds have passed" in {
   //   ???

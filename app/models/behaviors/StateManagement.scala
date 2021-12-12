@@ -47,7 +47,6 @@ trait StateManagement {
         val format = "yyyy-MM-dd HH:mm:ss.SSS"
         val currentTime = new SimpleDateFormat(format).format(new Date())
         val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, currentState.rolloverTimeIntervalUnit)
-        // val isRollover = rollover.isRollover(currentState.rolloverTime, currentTime, format, Calendar.DATE)
         isRollover match {
           case false => Right(s) // not yet time to rollover
           case true => {
