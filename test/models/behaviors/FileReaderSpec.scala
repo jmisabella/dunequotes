@@ -64,6 +64,26 @@ All
     val contents = reader.readFile(emptyFileName)
     assert(contents.isRight && contents.getOrElse("ERROR OCCURRED") == emptyFileContents, "Error occurrred reading from empty file")
   }
+
+  it should "know when file does not exist" in {
+    val exists = reader.exists(nonExistentFileName)
+    assert(!exists, s"Expected file [$nonExistentFileName] not to exist, but exists was calculated as [$exists]")
+  }
+
+  it should "know when file exists" in {
+    val exists = reader.exists(singleLineFileName)
+    assert(exists, s"Expected file [$singleLineFileName] to exist, but exists was calculated as [$exists]")
+  }
+
+  it should "know when file is empty" in {
+    val empty = reader.isEmpty(emptyFileName)
+    assert(empty, s"Expected file [$emptyFileName] to be empty, but isEmpty was calculated as [$empty]")
+  }
+  
+  it should "know when file has contents" in {
+    val empty = reader.isEmpty(singleLineFileName)
+    assert(!empty, s"Expected file [$singleLineFileName] not to be empty, but isEmpty was calculated as [$empty]")
+  }
   
   it should "read from single-line file" in {
     val contents = reader.readFile(singleLineFileName)

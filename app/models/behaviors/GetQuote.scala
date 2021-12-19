@@ -6,11 +6,11 @@ import models.utilities.RNG
 trait GetQuote {
 
   // TODO: test
-  def randomQuote(state: State): (Quote, State) = {
+  def randomQuote(state: State): (State, Quote) = {
     val (random, nextSeed): (Int, RNG) = state.rng.boundedPositiveInt(state.quotes.length + 1)
     val quote: Quote = state.quotes(random)
     val stateWithUpdatedSeed: State = state.copy(rng = nextSeed)
-    (quote, stateWithUpdatedSeed)
+    (stateWithUpdatedSeed, quote)
   }
 
   def featuredQuote(state: State): Option[Quote] = state.history.reverse.headOption

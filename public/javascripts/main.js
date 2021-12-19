@@ -35,6 +35,7 @@
     function onMessage(event) {
         console.log(event.data);
         let receivedData = JSON.parse(event.data);
+        // console.log("New Data: ", receivedData.body);
         console.log("New Data: ", receivedData);
         // get the text from the "body" field of the json we
         // receive from the server.
@@ -46,7 +47,16 @@
     }
 
     function appendServerMessageToView(title, message) {
-        $("#message-content").append("<span>" + title + ": " + message + "<br /><br /></span>");
+      // obj = JSON.parse(message);
+      // alert(obj);
+      // obj = message.quote;
+      // alert(obj);
+      // alert(message.quote);
+      $("#quote").html(message.quote);
+      // alert(message.source);
+      $("#source").html(message.source);
+
+      $("#message-content").append("<span>" + title + ": " + message + "<br /><br /></span>");
     }
 
     function consoleLog(message) {

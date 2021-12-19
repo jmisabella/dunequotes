@@ -2,7 +2,14 @@ package models.classes
 
 import play.api.libs.json.{ Json, Format, JsValue }
 
-case class Quote(source: String, quote: String)
+case class Quote(source: String, quote: String) {
+  override def toString(): String = {
+    (Json.obj(
+      "source" -> source,
+      "quote" -> quote
+    )).toString()
+  }
+}
 object Quote {
   def apply(quote: String): Quote = Quote("unknown", quote)
   implicit val jsonFormat: Format[Quote] = Json.format[Quote]

@@ -18,7 +18,6 @@ object QuoteService extends StateManagement {
   override val writer: FileWriter = fileWriterService
   override val serialization: QuoteSerialization = serializationService
   override val rollover: TimeRollover = rolloverService
-  override val getQuote: GetQuote = getQuoteService
-  
+  override val get: GetQuote = getQuoteService
 
 } 

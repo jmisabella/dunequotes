@@ -20,6 +20,16 @@ trait FileReader {
     }
   }
 
+  def exists(source: String): Boolean = {
+    new File(source).isFile();
+  }
+
+  def isEmpty(source: String): Boolean = {
+    exists(source) && 
+      readFile(source).isRight && 
+      readFile(source).getOrElse("").trim() == ""
+  }
+
   def lastModified(source: String): Either[String, String] = {
     try {
       val last: Long = new File(source).lastModified()

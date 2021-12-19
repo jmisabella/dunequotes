@@ -23,7 +23,7 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     override val writer: FileWriter = fileWriterService
     override val serialization: QuoteSerialization = serializationService
     override val rollover: TimeRollover = rolloverService
-    override val getQuote: GetQuote = getQuoteService
+    override val get: GetQuote = getQuoteService
   } 
   private val quotes = """{"quotes":[
     {
@@ -107,6 +107,7 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
   ]}"""
 
   private val quotesFileName = "quotes.json"
+  private val nonExistentHistoryFileName = "nonExistentHistory.json"
   private val emptyQuotesFileName = "emptyQuotes.json"
   private val emptyHistoryFileName = "emptyHistory.json"
   private val historySize1FileName = "history1.json"
@@ -161,6 +162,7 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
 
   override def afterEach(): Unit = {
     new File(quotesFileName).delete
+    new File(nonExistentHistoryFileName).delete
     new File(emptyHistoryFileName).delete
     new File(emptyQuotesFileName).delete
     new File(historySize1FileName).delete
@@ -187,14 +189,15 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val historyLimit: Int = 3
     val state: Either[String, State] = mgmt.initialState(quotesFileName, emptyHistoryFileName, historyLimit, Calendar.MINUTE)
     assert(state.isRight, s"Expected state to be initialized but an error occurred: $state")
-    assert(state.getOrElse(State()).history == history, s"Expected history [${history}], actual [${state.getOrElse(State()).history}]")
+    assert(state.getOrElse(State()).history.length == history.length + 1, s"Expected history length [${history.length + 1}], actual [${state.getOrElse(State()).history}]")
     assert(state.getOrElse(State()).quotes == quotes, s"Expected quotes [${quotes}], actual [${state.getOrElse(State()).quotes}]")
   }
 
-  it should "fail to initialize minute rollover state when history file is missing" in {
+  it should "successfully initialize minute rollover state when history file is missing" in {
     val historyLimit: Int = 3
-    val state: Either[String, State] = mgmt.initialState(quotesFileName, "non-existent-history-file.json", historyLimit, Calendar.MINUTE)
-    assert(state.isLeft, s"Expected failure because history file [non-existent-history-file.json] does not exist yet history was successfully read: $state")
+    val state: Either[String, State] = mgmt.initialState(quotesFileName, nonExistentHistoryFileName, historyLimit, Calendar.MINUTE)
+    assert(state.isRight, s"Expected successful state initialization when history file [$nonExistentHistoryFileName] does not exist, however state initialization failed: $state")
+    assert(state.getOrElse(State()).history.length == 1, s"Expected history length [1] but history length was actually [${state.getOrElse(State()).history.length}]")
   }
 
   it should "initialize minute rollover state when history size is 1" in {
@@ -264,6 +267,8 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val state3: State = state3Check.getOrElse(State())
     assert(state3.history.length == initialHistory.length + 1, s"Expected history length [${initialHistory.length + 1}], actual [${state3.history.length}]")
     assert(state3.quotes == quotes, s"Expected quotes [${quotes}], actual [${state3.quotes}]")
+    val updatedHistory: Seq[Quote] = readQuotes(historySize1FileName)
+    assert(updatedHistory == state3.history, s"Expected history [${updatedHistory}], actual [${state3.history}]")
   }
   
   it should "get minute rollover state but NOT rollover when history size is 1 and 5 seconds have passed" in {
@@ -281,6 +286,8 @@ class StateManagementSpec extends AnyFlatSpec with BeforeAndAfterEach {
     val state2: State = state2Check.getOrElse(State())
     assert(state2.history == history, s"Expected history [${history}], actual [${state2.history}]")
     assert(state2.quotes == quotes, s"Expected quotes [${quotes}], actual [${state2.quotes}]")
+    val updatedHistory: Seq[Quote] = readQuotes(historySize1FileName)
+    assert(updatedHistory == state2.history, s"Expected history [${updatedHistory}], actual [${state2.history}]")
   }
   
   // it should "get minute rollover state and rollover when history size is 1 and 1 minute has passed" in {
