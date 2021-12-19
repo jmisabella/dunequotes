@@ -1,6 +1,5 @@
    $(document).ready(function() {
-    // TODO...
-    sendInitToServer(); // temp test (TODO: remove) 
+    sendInitToServer(); // temp test (TODO: do we need to remove this?) 
    });
     
     var webSocket;
@@ -24,7 +23,6 @@
         consoleLog("DISCONNECTED from server");
         consoleLog("Re-initializing a new fresh connection so server will be available for next action");
         init();
-        // appendClientMessageToView(":", "DISCONNECTED");
     }
 
     function onError(event) {
@@ -33,82 +31,59 @@
     }
 
     function onMessage(event) {
-        console.log(event.data);
-        let receivedData = JSON.parse(event.data);
-        // console.log("New Data: ", receivedData.body);
-        console.log("New Data: ", receivedData);
-        // get the text from the "body" field of the json we
-        // receive from the server.
-        appendServerMessageToView("Server", receivedData.body);
-    }
-
-    function appendClientMessageToView(title, message) {
-        $("#message-content").append("<span>" + title + ": " + message + "<br /></span>");
-    }
-
-    function appendServerMessageToView(title, message) {
-      // obj = JSON.parse(message);
-      // alert(obj);
-      // obj = message.quote;
-      // alert(obj);
-      // alert(message.quote);
-      $("#quote").html(message.quote);
-      // alert(message.source);
-      $("#source").html(message.source);
-
-      $("#message-content").append("<span>" + title + ": " + message + "<br /><br /></span>");
+      console.log(event.data);
+      let receivedData = JSON.parse(event.data);
+      console.log("New Data: ", receivedData);
+      $("#quote").html(receivedData.body.quote);
+      $("#source").html(receivedData.body.source);
     }
 
     function consoleLog(message) {
-        console.log("New message: ", message);
+      console.log("New message: ", message);
     }
 
     window.addEventListener("load", init, false);
 
-    $("#send-button").click(function (e) {
-        console.log("Sending ...");
-        getMessageAndSendToServer();
-        // put focus back in the textarea
-        $("#message-input").focus();
+    $("#toggle-random").click(function (e) {
+      quote();
     });
+    
+    function quote() {
+      var currentFunction = $("#toggle-random").html();
+      if (currentFunction == "") {
+        currentFunction = "Featured";
+      }
+      var nextFunction = "";
+      if (currentFunction == "Featured") {
+        nextFunction = "Random";
+      } else {
+        nextFunction = "Featured";
+      }
+      $("#toggle-random").html(nextFunction);
+
+      messageInput = currentFunction.toLowerCase();
+
+      // if the trimmed message was blank, return now
+      if ($.trim(messageInput) == "") {
+          return false;
+      }
+
+      // create the message as json
+      let jsonMessage = {
+          message: messageInput
+      };
+
+      // send our json message to the server
+      sendToServer(jsonMessage);
+    } 
 
     // send the message when the user presses the <enter> key while in the textarea
     $(window).on("keydown", function (e) {
         if (e.which == 13) {
-            getMessageAndSendToServer();
-            return false;
+          quote();
+          return false;
         }
     });
-
-    // there’s a lot going on here:
-    // 1. get our message from the textarea.
-    // 2. append that message to our view/div.
-    // 3. create a json version of the message.
-    // 4. send the message to the server.
-    function getMessageAndSendToServer() {
-
-        // get the text from the textarea
-        messageInput = $("#message-input").val();
-
-        // clear the textarea
-        $("#message-input").val("");
-
-        // if the trimmed message was blank, return now
-        if ($.trim(messageInput) == "") {
-            return false;
-        }
-
-        // add the message to the view/div
-        appendClientMessageToView("Me", messageInput);
-
-        // create the message as json
-        let jsonMessage = {
-            message: messageInput
-        };
-
-        // send our json message to the server
-        sendToServer(jsonMessage);
-    }
 
     function sendInitToServer() {
       messageInput = "featured";

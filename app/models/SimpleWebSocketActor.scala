@@ -55,7 +55,6 @@ class SimpleWebSocketActor(clientActorRef: ActorRef) extends Actor {
         println("FINAL RESPONSE: " + finalResponse)
         val json: JsValue = Json.parse(s"""{"body": $finalResponse}""")
 
-        // val json: JsValue = Json.parse(s"""{"body": "You said, ‘$clientMessage’"}""")
         clientActorRef ! (json)
   }
 
