@@ -1,33 +1,32 @@
-   $(document).ready(function() {
-    sendInitToServer(); // temp test (TODO: do we need to remove this?) 
-   });
-    
     var webSocket;
     var messageInput;
 
     function init() {
-        var host = location.origin.replace(/^https/, 'wss').replace(/^http/, 'ws');
-        webSocket = new WebSocket(`${host}/ws`);
-        webSocket.onopen = onOpen;
-        webSocket.onclose = onClose;
-        webSocket.onmessage = onMessage;
-        webSocket.onerror = onError;
-        $("#message-input").focus();
+      var host = location.origin.replace(/^https/, 'wss').replace(/^http/, 'ws');
+      webSocket = new WebSocket(`${host}/ws`);
+      webSocket.onopen = onOpen;
+      webSocket.onclose = onClose;
+      webSocket.onmessage = onMessage;
+      webSocket.onerror = onError;
+      // $("#quote").focus();
+      // $("#message-input").focus();
     }
 
     function onOpen(event) {
-        consoleLog("CONNECTED to server");
+      consoleLog("CONNECTED to server");
+      sendInitToServer();
+      quote();
     }
 
     function onClose(event) {
-        consoleLog("DISCONNECTED from server");
-        consoleLog("Re-initializing a new fresh connection so server will be available for next action");
-        init();
+      consoleLog("DISCONNECTED from server");
+      consoleLog("Re-initializing a new fresh connection so server will be available for next action");
+      init();
     }
 
     function onError(event) {
-        consoleLog("ERROR: " + event.data);
-        consoleLog("ERROR: " + JSON.stringify(event));
+      consoleLog("ERROR: " + event.data);
+      consoleLog("ERROR: " + JSON.stringify(event));
     }
 
     function onMessage(event) {
@@ -50,7 +49,7 @@
     
     function quote() {
       var currentFunction = $("#toggle-random").html();
-      if (currentFunction == "") {
+      if (currentFunction == null || currentFunction == "") {
         currentFunction = "Featured";
       }
       var nextFunction = "";
@@ -65,7 +64,7 @@
 
       // if the trimmed message was blank, return now
       if ($.trim(messageInput) == "") {
-          return false;
+        return false;
       }
 
       // create the message as json
@@ -79,29 +78,29 @@
 
     // send the message when the user presses the <enter> key while in the textarea
     $(window).on("keydown", function (e) {
-        if (e.which == 13) {
-          quote();
-          return false;
-        }
+      if (e.which == 13) {
+        quote();
+        return false;
+      }
     });
 
     function sendInitToServer() {
       messageInput = "featured";
       if ($.trim(messageInput) == "") {
-          return false;
+        return false;
       }
       let jsonMessage = {
-          message: messageInput
+        message: messageInput
       };
       sendToServer(jsonMessage);
     }
 
     // send the data to the server using the WebSocket
     function sendToServer(jsonMessage) {
-        if(webSocket.readyState == WebSocket.OPEN) {
-            consoleLog("SENT: " + jsonMessage.message);
-            webSocket.send(JSON.stringify(jsonMessage));
-        } else {
-            consoleLog("Could not send data. Websocket is not open.");
-        }
+      if(webSocket.readyState == WebSocket.OPEN) {
+        consoleLog("SENT: " + jsonMessage.message);
+        webSocket.send(JSON.stringify(jsonMessage));
+      } else {
+        consoleLog("Could not send data. Websocket is not open.");
+      }
     }
