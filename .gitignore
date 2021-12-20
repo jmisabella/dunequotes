@@ -1,9 +1,6 @@
 target/
 logs/
 !project/build.properties
-project/metals.sbt
-project/plugins.sbt
-project/project/
 .vscode/
 .metals/
 .bsp/
