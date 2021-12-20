@@ -30,7 +30,7 @@ class SimpleWebSocketActor(clientActorRef: ActorRef) extends Actor {
         val quotesConfigPath: String = rootPath + "conf/quotes.json"
         val historyConfigPath: String = rootPath + "conf/history.json"
         val historyLimit = 60
-        val prevStateCheck: Either[String, State] = QuoteService.initialState(quotesConfigPath, historyConfigPath, historyLimit, Calendar.DATE)
+        val prevStateCheck: Either[String, State] = QuoteService.initialState(quotesConfigPath, historyConfigPath, historyLimit, Calendar.HOUR_OF_DAY)
 
         val (nextState, response): (Option[State], String) = prevStateCheck match {
           case Left(e) => (None, s"Error occurred initializing state: $e")
