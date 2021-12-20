@@ -1,0 +1,8 @@
+target/
+logs/
+project/
+!project/build.properties
+.vscode/
+.metals/
+.bsp/
+.bloop/

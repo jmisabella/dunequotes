@@ -1,0 +1,29 @@
+
+body {
+  overflow: hidden;
+  background-color: #896539 !important;
+  width: 100%;
+  font-family: Georgia, 'Times New Roman', Arial, Times, serif !important;
+}
+
+.container {
+  margin-top: 24px !important;
+  border: 4px solid #c3b091 !important;
+  background-color: #c19a6b !important;
+  padding: 3em !important;
+}
+
+button#toggle-random {
+  background-color: #AD7F48; 
+  color: #edc9af;
+  font-size: small;
+  float: right;
+}
+
+#quote {
+  font-size: 14pt;
+}
+#source {
+  font-size: 10pt;
+  text-align: center;
+}
